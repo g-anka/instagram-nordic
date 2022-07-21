@@ -8,7 +8,8 @@ import {
     useAuthState,
     useCreateUserWithEmailAndPassword,
 } from 'react-firebase-hooks/auth'
-import { signOut } from 'firebase/auth'
+import { signOut, updateProfile } from 'firebase/auth'
+import Link from "next/link";
 
 type FormData = {
     name: string
@@ -24,14 +25,16 @@ const Register: NextPage = () => {
 
     const { register, handleSubmit } = useForm<FormData>()
 
-    const onSubmit = handleSubmit( (data) => {
-        createUserWithEmailAndPassword(data.email, data.password)
+    const onSubmit = handleSubmit( async (data) => {
+        await createUserWithEmailAndPassword(data.email, data.password)
     })
 
-    if (user) {
+    if(user) {
         return (
             <div>
-                <div>Вы вошли как {user.email}</div>
+                <div>
+                    Вы вошли как {user.email}
+                </div>
                 <Button onClick={() => signOut(auth)}>Выйти</Button>
             </div>
         )
@@ -70,6 +73,9 @@ const Register: NextPage = () => {
                         Email занят
                     </Alert>
                 )}
+                <Alert sx={{ mt: 2}} severity="info">
+                    Уже есть аккаунт? <Link href="/auth/login">Войдите</Link>
+                </Alert>
             </form>
         </div>
     )
