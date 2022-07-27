@@ -14,7 +14,14 @@ const Post: NextPage = () => {
     return (
         <div>
             <h1>Страница поста</h1>
-            {post && <div>{post.text}</div>}
+            {post && (
+                <div>
+                    <div>
+                        {post.createdAt && <div>{post.createdAt.toLocaleDateString()}</div>}
+                    </div>
+                    <div>{post.text}</div>
+                </div>
+            )}
             <button onClick={() => router.push('/posts')}>Список постов</button>
         </div>
     )
