@@ -8,6 +8,8 @@ import { useRouter } from 'next/router'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { auth, db, storage } from '../../app/firebaseApp'
+import {AirlineSeatLegroomExtraRounded} from "@mui/icons-material";
+import {Alert} from "@mui/material";
 
 type FormData = {
     imageURL: string
@@ -17,8 +19,15 @@ type FormData = {
 const New = () => {
     const [user] = useAuthState(auth)
     const router = useRouter()
-    const { register, handleSubmit, setValue } = useForm<FormData>()
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<FormData>({ mode: 'onChange' })
     const [uploadFile, uploading] = useUploadFile()
+    const imageURLValue = watch('imageURL')
 
     const onSubmit = handleSubmit(async (data) => {
         if (user) {
@@ -49,16 +58,8 @@ const New = () => {
 
     return (
         <div>
-            <h1>Новый пост</h1>
+            <h1>New post</h1>
             <form onSubmit={onSubmit}>
-                <TextField
-                    {...register('text')}
-                    multiline
-                    label="Текст поста"
-                    rows={4}
-                    fullWidth
-                    sx={{ mb: 2 }}
-                />
                 <div>
                     <Button
                         disabled={uploading}
@@ -66,7 +67,7 @@ const New = () => {
                         variant="contained"
                         sx={{ mb: 1 }}
                     >
-                        Загрузить фото
+                        Upload photo
                         <input
                             type="file"
                             hidden
@@ -75,6 +76,20 @@ const New = () => {
                         />
                     </Button>
                 </div>
+                {errors.imageURL && (
+                <Alert severity='error'>Please, upload your photo</Alert>
+                )}
+                {imageURLValue && (
+                    <img src={imageURLValue} alt='' style={{ width: 200 }} />
+                )}
+                <TextField
+                    {...register('text')}
+                    multiline
+                    label="Post text"
+                    rows={4}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                />
                 <Button type="submit">Опубликовать</Button>
             </form>
         </div>
