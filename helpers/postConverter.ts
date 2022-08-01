@@ -18,6 +18,7 @@ const postConverter: FirestoreDataConverter<Post> = {
         const data = snapshot.data(options)
         return {
             uid: data.uid,
+            user: data.user,
             id: snapshot.id,
             text: data.text,
             imageURL: data.imageURL,

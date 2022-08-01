@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import {collection, addDoc, serverTimestamp, doc} from 'firebase/firestore'
 import { ref, getDownloadURL } from 'firebase/storage'
 import { useForm } from 'react-hook-form'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -8,8 +8,8 @@ import { useRouter } from 'next/router'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { auth, db, storage } from '../../app/firebaseApp'
-import {AirlineSeatLegroomExtraRounded} from "@mui/icons-material";
 import {Alert} from "@mui/material";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 
 type FormData = {
     imageURL: string
@@ -18,6 +18,8 @@ type FormData = {
 
 const New = () => {
     const [user] = useAuthState(auth)
+    const docRef = doc(db, 'users', String(user?.uid))
+    const [userProfile] = useDocumentData(docRef)
     const router = useRouter()
     const {
         register,
@@ -30,10 +32,13 @@ const New = () => {
     const imageURLValue = watch('imageURL')
 
     const onSubmit = handleSubmit(async (data) => {
-        if (user) {
+        if (user && userProfile) {
             const newPost = {
                 text: data.text,
                 uid: user.uid,
+                user: {
+                    name: userProfile.name,
+                },
                 createdAt: serverTimestamp(),
                 imageURL: data.imageURL,
             }
@@ -90,7 +95,7 @@ const New = () => {
                     fullWidth
                     sx={{ mb: 2 }}
                 />
-                <Button type="submit">Опубликовать</Button>
+                <Button type="submit">Publish</Button>
             </form>
         </div>
     )

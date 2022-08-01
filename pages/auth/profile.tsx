@@ -7,7 +7,7 @@ import { auth, db } from '../../app/firebaseApp'
 const Profile = () => {
     const [user] = useAuthState(auth)
     console.log("USER: ", user)
-    const docRef = doc(db, 'users', user?.uid || 'null')
+    const docRef = doc(db, 'users', String(user?.uid))
     const [userProfile] = useDocumentData(docRef)
     console.log("USER_PROF: ", userProfile)
 
