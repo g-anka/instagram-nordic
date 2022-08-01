@@ -8,7 +8,9 @@ import postConverter from '../../helpers/postConverter'
 
 const Posts: NextPage = () => {
     const postsRef = collection(db, 'posts').withConverter(postConverter)
-    const [posts] = useCollectionData(query(postsRef, orderBy ('createdAt', 'desc')))
+    const [posts] = useCollectionData(
+        query(postsRef, orderBy ('createdAt', 'desc'))
+    )
 
     console.log("POSTS", posts)
 

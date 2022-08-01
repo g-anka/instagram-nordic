@@ -11,6 +11,7 @@ const Post: NextPage = () => {
         postConverter
     )
     const [post] = useDocumentData(docRef)
+
     return (
         <div>
             <h1>Страница поста</h1>
@@ -18,6 +19,7 @@ const Post: NextPage = () => {
                 <div>
                     <div>
                         {post.createdAt && <div>{post.createdAt.toLocaleDateString()}</div>}
+                        <img style={{ maxWidth: 500 }} src={post.imageURL} alt="" />
                     </div>
                     <div>{post.text}</div>
                 </div>
