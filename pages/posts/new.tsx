@@ -56,10 +56,12 @@ const New = () => {
             const result = await uploadFile(fileRef, event.target.files[0])
             if (result) {
                 const imageURL = await getDownloadURL(result?.ref)
-                setValue('imageURL', imageURL)
+                setValue('imageURL', imageURL, { shouldValidate: true })
             }
         }
     }
+
+    register('imageURL', { required: true })
 
     return (
         <div>
@@ -76,16 +78,15 @@ const New = () => {
                         <input
                             type="file"
                             hidden
-                            {...register('imageURL')}
                             onChange={handleFileChange}
                         />
                     </Button>
                 </div>
                 {errors.imageURL && (
-                <Alert severity='error'>Please, upload your photo</Alert>
+                <Alert severity="error">Please, upload your photo</Alert>
                 )}
                 {imageURLValue && (
-                    <img src={imageURLValue} alt='' style={{ width: 200 }} />
+                    <img src={imageURLValue} alt="" style={{ width: 200 }} />
                 )}
                 <TextField
                     {...register('text')}
