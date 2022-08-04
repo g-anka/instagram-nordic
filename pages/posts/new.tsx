@@ -2,14 +2,13 @@ import { ChangeEvent } from 'react'
 import {collection, addDoc, serverTimestamp, doc} from 'firebase/firestore'
 import { ref, getDownloadURL } from 'firebase/storage'
 import { useForm } from 'react-hook-form'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import { useUploadFile } from 'react-firebase-hooks/storage'
 import { useRouter } from 'next/router'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import { auth, db, storage } from '../../app/firebaseApp'
+import { db, storage } from '../../app/firebaseApp'
 import {Alert} from "@mui/material";
-import { useDocumentData } from "react-firebase-hooks/firestore";
+import useUserProfile from "../../helpers/useUserProfile";
 
 type FormData = {
     imageURL: string
@@ -17,9 +16,8 @@ type FormData = {
 }
 
 const New = () => {
-    const [user] = useAuthState(auth)
-    const docRef = doc(db, 'users', String(user?.uid))
-    const [userProfile] = useDocumentData(docRef)
+    const { userProfile } = useUserProfile()
+
     const router = useRouter()
     const {
         register,
@@ -32,10 +30,10 @@ const New = () => {
     const imageURLValue = watch('imageURL')
 
     const onSubmit = handleSubmit(async (data) => {
-        if (user && userProfile) {
+        if (userProfile) {
             const newPost = {
                 text: data.text,
-                uid: user.uid,
+                uid: userProfile.uid,
                 user: {
                     name: userProfile.name,
                 },

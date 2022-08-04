@@ -17,7 +17,8 @@ const userConverter: FirestoreDataConverter<User> = {
     ): User {
         const data = snapshot.data(options)
         return {
-           name: data.name,
+            uid: snapshot.id,
+            name: data.name,
             likes: data.likes,
         }
     },
