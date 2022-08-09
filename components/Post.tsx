@@ -10,6 +10,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import CommentIcon from '@mui/icons-material/Comment'
 import { formatDistance } from 'date-fns'
 import type PostType from '../types/post'
+import Images from '../components/Images'
 
 
 type PostPropTypes = {
@@ -25,15 +26,13 @@ const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
     return (
         <div>
             <Card>
-                <CardHeader
-                    title={post.user.name}
-                    subheader={date}
-                />
-                <Link href={`/posts/${post.id}`}>
-                    <a>
-                        <CardMedia component='img' image={post.imageURL} />
-                    </a>
-                </Link>
+                {post.user &&
+                    <CardHeader
+                        title={post.user.name}
+                        subheader={date}
+                    />
+                }
+                {post.images && <Images images={post.images} />}
                 <CardContent>{post.text}</CardContent>
                 <CardActions>
                     <IconButton onClick={onLikeClick}>

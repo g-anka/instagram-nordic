@@ -5,7 +5,7 @@ type Post = {
     }
     id: string,
     text: string,
-    imageURL: string,
+    images: string[],
     createdAt: Date | null,
     likesCount: number,
     commentsCount: number,

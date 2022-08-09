@@ -7,11 +7,12 @@ import { useRouter } from 'next/router'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { db, storage } from '../../app/firebaseApp'
-import {Alert} from "@mui/material";
-import useUserProfile from "../../helpers/useUserProfile";
+import {Alert} from '@mui/material'
+import useUserProfile from '../../helpers/useUserProfile'
+import ImagesOrder from '../../components/ImageOrder'
 
 type FormData = {
-    imageURL: string
+    images: string[]
     text: string
 }
 
@@ -27,7 +28,7 @@ const New = () => {
         formState: { errors },
     } = useForm<FormData>({ mode: 'onChange' })
     const [uploadFile, uploading] = useUploadFile()
-    const imageURLValue = watch('imageURL')
+    const imagesValue = watch('images')
 
     const onSubmit = handleSubmit(async (data) => {
         if (userProfile) {
@@ -38,7 +39,7 @@ const New = () => {
                     name: userProfile.name,
                 },
                 createdAt: serverTimestamp(),
-                imageURL: data.imageURL,
+                images: data.images,
             }
 
             console.log("NEW_POST", newPost)
@@ -50,16 +51,28 @@ const New = () => {
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
-            const fileRef = ref(storage, `${Date.now()}-${event.target.files[0].name}`)
-            const result = await uploadFile(fileRef, event.target.files[0])
-            if (result) {
-                const imageURL = await getDownloadURL(result?.ref)
-                setValue('imageURL', imageURL, { shouldValidate: true })
+            const fileUploads = Array.from(event.target.files).map(async (file) => {
+                 const fileRef = ref(storage, `${Date.now()}-${file.name}`)
+                 const result = await uploadFile(fileRef, file)
+                 if (result) {
+                     return await getDownloadURL(result?.ref)
+                 }
+                 return ''
+            })
+            const results = await Promise.all(fileUploads)
+            console.log("RESULTS", results)
+
+            if(results) {
+                setValue('images', results, { shouldValidate: true })
             }
         }
     }
 
-    register('imageURL', { required: true })
+    const handleImagesSort = ( newImages: string[] ) => {
+        setValue('images', newImages)
+    }
+
+    register('images', { required: true })
 
     return (
         <div>
@@ -74,17 +87,18 @@ const New = () => {
                     >
                         Upload photo
                         <input
+                            multiple
                             type="file"
                             hidden
                             onChange={handleFileChange}
                         />
                     </Button>
                 </div>
-                {errors.imageURL && (
+                {errors.images && (
                 <Alert severity="error">Please, upload your photo</Alert>
                 )}
-                {imageURLValue && (
-                    <img src={imageURLValue} alt="" style={{ width: 200 }} />
+                {imagesValue && (
+                    <ImagesOrder images={imagesValue} onSort={handleImagesSort} />
                 )}
                 <TextField
                     {...register('text')}
@@ -98,6 +112,6 @@ const New = () => {
             </form>
         </div>
     )
-}
+};
 
 export default New
